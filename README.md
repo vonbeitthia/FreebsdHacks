@@ -36,6 +36,7 @@ vm init
 	Creamos el switch virtual, asignando el nombre services y una dirección ip:
 vm switch create -a 10.1.1.1/24 services
 	En cualquier momento podemos monitorear nuestras interfaces mediante ifconfig.
+	
 Permisos de dispositivos
 	Este punto, será ampliado en próximas oportunidades. Sin embargo, aquí permitimos mediante reglas en el archivo /etc/devfs.rules, que los dispositivos de red y de máquina virtual sean visibles en la jaula.  Las siguientes lineas son agregadas; no se modifican las previas.
 	[devfs_rules_bhyve_jail=25]
@@ -59,7 +60,7 @@ iocage fetch
 
 	Seleccionamos la versión actual más vigente y procedemos a esperar.
 	Al finalizar, creamos nuestra jaula virtual:
-iocage create  -r LATEST -n winJail  interfaces="vnet0:vm-services" ip4_addr="vnet0|10.1.1.2/24"   defaultrouter="10.1.1.1" vnet_default_interface="vm-services" vnet=on boot=on allow_raw_sockets=on devfs_ruleset="25",
+iocage create -r 12.1-RELEASE -n winJail interfaces="vnet0:vm-services" ip4_addr="vnet0|10.1.1.2/24" defaultrouter="10.1.1.1" vnet_default_interface="vm-services" vnet=on allow_vmm=on devfs_ruleset="25"  
 
 	Terminando la instalación tenemos las siguientes recomendaciones para el archivo /etc/sysctl.conf:
 		net.inet.ip.forwarding=1       # Enable IP forwarding between interfaces
@@ -100,7 +101,7 @@ Actualización del sistema de paquetes
 	Para solventar las dependencias requeridas para instalar nuevos paquetes y compilar el árbol de po rts es necesario actualizar con:
 pkg update
 	Podemos instalar el software requerido para correr nuestra máquina virtual dentro de la jaula:
-pkg install -y vm-bhyve bhyve-firmware uefi-edk2-bhyve nano
+pkg install -y vm-bhyve  nano bhyve-firmware bash
 	Creamos un directorio que almacene nuestras máquinas virtuales:
 mkdir /root/vm 
 	Hacemos los cambios respectivos en /etc/rc.conf
@@ -116,15 +117,38 @@ Creación del switch de red virtual
 	Para el manejo de la interfaz de red se crea un switch virtual que se conectará a nuestra interfaz de red virtual principal (vm-services). 
 vm switch create public
 vm switch add public epair0b
-	Escribiendo vm switch list verificamos.
+	Escribiendo vm switch list verificamos.  Si consultamos con ifconfig comprobamos una interfaz llamada vm-public.
+
+		member: epair0b flags=143<LEARNING,DISCOVER,AUTOEDGE,AUTOPTP>
+		groups: bridge vm-switch viid-4c918@
+
+	Establecemos el shell bash por defecto para el usuario root.
+chsh -s /usr/local/bin/bash
+	Si no deseamos reiniciar la jaula (iocage restart winJail), ejecutamos entonces el entorno de shell bash escribiendo bash y presionando enter.
+	Para asegurar que el switch siempre este disponible para nuestra máquina virtual, hemos creado un script en /root/reiniciar_sw.sh con el siguiente contenido:
+		#!/bin/bash
+		#script para reiniciar el switch virtual
+		echo Eliminando información de switch....
+		echo >/root/vm/.config/system.conf
+		echo Creando switch virtual nuevo
+		vm switch create public
+		vm switch add public epair0b
+		ifconfig vm-public
+		vm switch list public
+	Para ejecutar el script escribimos 
+sh /root/reiniciar_sw.sh
+	Si la configuración se ejecutó correctamente, obtenemos la siguiente información en pantalla:
+
+	Si un mensaje indica algún error al agregar la interfaz epair0b al bridge, se recomienda reiniciar la jaula y ejecutar nuevamente el script.
 Creando la máquina virtual de windows 7
 	Mediante la siguiente instrucción, bhyve genera una VM configurada para windows y con 120 Gb de disco duro:
 vm create -t windows -s 120G win7
 
 	Para efectuar modificaciones en la configuración podemos modificar el archivo /root/vm/win7/win7.conf o  a través de la orden vm config win7. Cambiamos los siguientes parámetros
-		cambiamos xhci_mouse="no"
-		disk0_opts="sectorsize=512"
-		network0_switch="public"
+		cambiamos 
+			xhci_mouse="no"
+		agregamos
+			disk0_opts="sectorsize=512"
 	Procedemos a la instalación de nuestro sistema mediante:
 vm install win7 win64.iso
 	Para monitorear o acceder a la VM utilizamos la aplicación vncviewer en la dirección 10.0.0.3:5900, la cual, podemos ejecutar desde nuestro host de Freebsd.
@@ -146,14 +170,25 @@ vm install win7 win64.iso
 
 
 Espero haber aportado la información necesaria.  FreeBsd debe ser para todos.
+Anexos
+Servidor dhcp
+pkg install isc-dhcp44-server
+ dhcpd_enable="YES"				# dhcpd enabled?
+	    dhcpd_flags="-q"				# command option(s)
+	    dhcpd_conf="/usr/local/etc/dhcpd.conf"	# configuration file
+	    dhcpd_ifaces=""				# ethernet interface(s)
+	    dhcpd_withumask="022"			# file creation mask
+
 Referencias
-https://www.cyberciti.biz/faq/update-source-tree-at-usr-src-using-svn-on-freebsd/
 
 https://github.com/lattera/articles/blob/master/freebsd/2018-10-27_jailed_bhyve/article.md
 
 https://blog.grem.de/pages/ayvn.html
 
 https://dan.langille.org/2015/03/07/getting-started-with-iocage-for-jails-on-freebsd/
+
+
+
 
 Índice
 
