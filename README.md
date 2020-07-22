@@ -1,3 +1,6 @@
+(Se recomienda consultar la versión pdf https://github.com/vonbeitthia/bhyveWindows7/blob/master/vm%20windows%20v7+%20iocage.pdf)
+
+
 Creación de una máquina virtual con Windows 7 (invitado) utilizando bhyve en Freebsd 12.1 (anfitrión)
 
 
