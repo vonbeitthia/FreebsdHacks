@@ -8,4 +8,6 @@ Contenido:
 	https://github.com/vonbeitthia/FreebsdHacks/blob/master/vm%20windows%20v7+%20iocage.pdf
 3) Creación de una jaula con iocage y bhyve corriendo windows 7 64 utilizando dataset ZFS
 	https://github.com/vonbeitthia/FreebsdHacks/blob/master/vm%20windows%20v7+%20iocage%20+%20ZFS.pdf
+4) Conexión ssh Jaula-Host con servidor gráfico X en host Freebsd
+	https://github.com/vonbeitthia/FreebsdHacks/blob/master/ssh%20con%20tunel%20servidor%20X.pdf
 
