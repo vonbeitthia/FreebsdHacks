@@ -15,4 +15,4 @@ Contenido:
 6) Zoneminder en jail
 	https://github.com/vonbeitthia/FreebsdHacks/blob/master/zoneminder.pdf
 7) Zabbix-server en jail
-	https://github.com/vonbeitthia/FreebsdHacks/blob/master/zabbix.pdf
+	https://github.com/vonbeitthia/FreebsdHacks/blob/master/zabbyx.pdf
