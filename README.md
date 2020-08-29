@@ -12,3 +12,7 @@ Contenido:
 	https://github.com/vonbeitthia/FreebsdHacks/blob/master/ssh%20con%20tunel%20servidor%20X.pdf
 5) Wine en jail 
 	https://github.com/vonbeitthia/FreebsdHacks/blob/master/wine%20en%20jail.pdf
+6) Zoneminder en jail
+	https://github.com/vonbeitthia/FreebsdHacks/blob/master/zoneminder.pdf
+7) Zabbix-server en jail
+	https://github.com/vonbeitthia/FreebsdHacks/blob/master/zabbix.pdf
