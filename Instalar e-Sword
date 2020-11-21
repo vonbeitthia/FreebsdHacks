@@ -1,0 +1,14 @@
+Instalacion de e-Sword 12.x en freebsd 12
+1) instale wine
+2) use winetrics y cree un nuevo perfil llamado eSword
+3) Descargue eSword. Instale usando export WINEPREFIX=/ruta/perfil/wine /ruta/instalador-eSword. 
+  Puede generar un error de instalacion
+4) Sin embargo compruebe la instalacion al consultar winecfg y ver las aplicaciones instaladas.
+5) abra winecfg y agregue las siguientes librerias dll
+    msxml3.dll
+    msxml6.dll
+    ambas como native, builtin
+6) Ejecute la aplicacion
+  export WINEPREFIX=/ruta/perfil/wine /ruta/eSword.exe
+
+
